@@ -1,0 +1,9 @@
+examples/PROJECT_REPORT.md
+ai-chat-sessions/
+snapshots/
+assets/
+MELPA-GUIDE.md
+*-outline.md
+*-pyts-outline.md
+*-py-outline.md
+upload-*.sh

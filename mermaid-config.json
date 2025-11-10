@@ -1,0 +1,14 @@
+{
+  "theme": "default",
+  "themeVariables": {
+    "fontSize": "18px",
+    "textColor": "#111",
+    "primaryTextColor": "#111",
+    "secondaryTextColor": "#222",
+    "tertiaryTextColor": "#333",
+    "lineColor": "#333",
+    "edgeLabelBackground": "#ffffff",
+    "fontFamily": "Inter, Arial, sans-serif"
+  }
+}
+
