@@ -40,6 +40,19 @@
 ;;      - RET, RET accepts defaults (PNG 1800px, white background, opens output)
 ;;      - C-u M-x md-mermaid-render-current to force re-render
 ;;
+;; Keybindings:
+;;   This package does not set global keybindings by default.
+;;   To enable the recommended bindings, add the following to your init.el:
+;;
+;;     (global-set-key (kbd "C-c m") 'md-mermaid-transient)
+;;     (global-set-key (kbd "C-c M") 'md-mermaid-prefix)
+;;
+;;   Or customize `md-mermaid-transient-menu-keybinding` and
+;;   `md-mermaid-keymap-prefix`.
+;;
+;;   You can also use the menu option (M-x md-mermaid-customize-keys) to
+;;   bind these keys interactively and save them to your custom file.
+;;
 ;; Presets offered:
 ;;   - SVG (browser/grip)      → neutral theme, transparent background
 ;;   - PNG 1280/1400/1800      → default theme, white background
@@ -696,10 +709,10 @@ Respects `md-mermaid-open-browser` (symbols `grip' or `http', or nil)."
     (when msgs
       (with-current-buffer (get-buffer-create "*md-mermaid*")
         (goto-char (point-max))
-        (insert (concat "\nDependencies missing:\n" (mapconcat #'identity msgs "\n")
+        (insert "\nDependencies missing:\n" (mapconcat #'identity msgs "\n")
                         (if md-mermaid-guide-on-missing-deps
                             (format "\n\nSee: %s (M-x md-mermaid-open-readme)\n" (md-mermaid--readme-path))
-                          "\n")))))))
+                          "\n"))))))
 
 (defun md-mermaid--preset->args (preset)
   "Convert PRESET symbol/cons to wrapper args."
@@ -794,7 +807,7 @@ With prefix arg FORCE command Ctrl u, re-render even if images exist."
 
 (defvar md-mermaid--active-prefix-keybinding nil
   "Track the currently active binding for the md-mermaid prefix command.")
-(defvar md-mermaid--active-transient-menu-keybinding nil
+(defvar md-mermaid-transient-menu-keybinding nil
   "Track the currently active global keybinding for the transient menu.")
 
 (defun md-mermaid--ensure-prefix-keymap ()
@@ -828,12 +841,12 @@ Update the global prefix binding when SYMBOL is set to VALUE."
   "Bind KEY to `md-mermaid-transient'; remove the binding when KEY is nil."
   (condition-case err
       (progn
-        (when md-mermaid--active-transient-menu-keybinding
-          (global-unset-key (kbd md-mermaid--active-transient-menu-keybinding))
-          (setq md-mermaid--active-transient-menu-keybinding nil))
+        (when md-mermaid-transient-menu-keybinding
+          (global-unset-key (kbd md-mermaid-transient-menu-keybinding))
+          (setq md-mermaid-transient-menu-keybinding nil))
         (when (and key (not (string-empty-p key)))
           (global-set-key (kbd key) #'md-mermaid-transient)
-          (setq md-mermaid--active-transient-menu-keybinding key)))
+          (setq md-mermaid-transient-menu-keybinding key)))
     (error
      (message "md-mermaid--apply-transient-menu-keybinding error: %s"
               (error-message-string err)))))
@@ -844,14 +857,14 @@ Update the transient menu binding when SYMBOL is set to VALUE."
   (set-default symbol value)
   (md-mermaid--apply-transient-menu-keybinding value))
 
-(defcustom md-mermaid-keymap-prefix "C-c M"
+(defcustom md-mermaid-keymap-prefix nil
   "Global prefix keybinding for md-mermaid commands.
 Set this to nil to disable the automatic binding."
   :type '(choice (const :tag "Disabled" nil) string)
   :group 'md-mermaid
   :set #'md-mermaid--set-keymap-prefix)
 
-(defcustom md-mermaid--transient-menu-keybinding "C-c m"
+(defcustom md-mermaid-transient-menu-keybinding nil
   "Global keybinding for `md-mermaid-transient`.
 Set this to nil to disable the automatic binding."
   :type '(choice (const :tag "Disabled" nil) string)
@@ -883,13 +896,13 @@ Returns a normalized key string or nil when the user disables the binding."
   (interactive)
   (condition-case err
       (let* ((menu-key (md-mermaid--read-keybinding-input "Main menu key"
-                                                         md-mermaid--transient-menu-keybinding))
+                                                         md-mermaid-transient-menu-keybinding))
              (ext-current (and md-mermaid--ext-available
                                md-mermaid-keymap-prefix))
              (ext-key (and md-mermaid--ext-available
                            (md-mermaid--read-keybinding-input "Extension prefix key"
                                                               ext-current))))
-        (customize-set-variable 'md-mermaid--transient-menu-keybinding menu-key)
+        (customize-set-variable 'md-mermaid-transient-menu-keybinding menu-key)
         (if md-mermaid--ext-available
             (progn
               (customize-set-variable 'md-mermaid-keymap-prefix ext-key)
@@ -897,13 +910,13 @@ Returns a normalized key string or nil when the user disables the binding."
                        (or menu-key "disabled")
                        (or ext-key "disabled"))
               (when (yes-or-no-p "Save these keybindings for future sessions? ")
-                (customize-save-variable 'md-mermaid--transient-menu-keybinding menu-key)
+                (customize-save-variable 'md-mermaid-transient-menu-keybinding menu-key)
                 (customize-save-variable 'md-mermaid-keymap-prefix ext-key)
                 (message "Keybindings saved to %s" (or custom-file user-init-file))))
           (message "Updated menu key: %s; extension prefix unchanged (extensions unavailable)."
                    (or menu-key "disabled"))
           (when (yes-or-no-p "Save the menu keybinding for future sessions? ")
-            (customize-save-variable 'md-mermaid--transient-menu-keybinding menu-key)
+            (customize-save-variable 'md-mermaid-transient-menu-keybinding menu-key)
             (message "Menu key saved to %s" (or custom-file user-init-file)))))
     (error
      (message "md-mermaid-customize-keys error: %s"
@@ -944,56 +957,56 @@ Returns a normalized key string or nil when the user disables the binding."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-show-versions)
-        (call-interactively 'md-mermaid-cli-show-versions)))
+        (call-interactively #'md-mermaid-cli-show-versions)))
 
     (defun md-mermaid--menu-cycle-post-verify-show ()
       "Wrapper: ensure CLI tools loaded, then cycle versions display preference."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-cycle-post-verify-show)
-        (call-interactively 'md-mermaid-cli-cycle-post-verify-show)))
+        (call-interactively #'md-mermaid-cli-cycle-post-verify-show)))
 
     (defun md-mermaid--menu-set-preferred-npm ()
       "Wrapper: ensure CLI tools loaded, then set preferred npm client."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-set-preferred-npm)
-        (call-interactively 'md-mermaid-cli-set-preferred-npm)))
+        (call-interactively #'md-mermaid-cli-set-preferred-npm)))
 
     (defun md-mermaid--menu-cycle-preferred-npm ()
       "Wrapper: ensure CLI tools loaded, then cycle npm client."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-cycle-preferred-npm)
-        (call-interactively 'md-mermaid-cli-cycle-preferred-npm)))
+        (call-interactively #'md-mermaid-cli-cycle-preferred-npm)))
 
     (defun md-mermaid--menu-add-global-node-bin-to-path ()
       "Wrapper: ensure CLI tools loaded, then add global Node bin to PATH."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-add-global-node-bin-to-path)
-        (call-interactively 'md-mermaid-cli-add-global-node-bin-to-path)))
+        (call-interactively #'md-mermaid-cli-add-global-node-bin-to-path)))
 
     (defun md-mermaid--menu-verify-and-fix-path ()
       "Wrapper: ensure CLI tools loaded, then verify tool and fix PATH."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-verify-and-fix-path)
-        (call-interactively 'md-mermaid-cli-verify-and-fix-path)))
+        (call-interactively #'md-mermaid-cli-verify-and-fix-path)))
 
     (defun md-mermaid--menu-show-log ()
       "Wrapper: show CLI tools log buffer."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-show-log)
-        (call-interactively 'md-mermaid-cli-show-log)))
+        (call-interactively #'md-mermaid-cli-show-log)))
 
     (defun md-mermaid--menu-show-debug ()
       "Wrapper: show CLI tools debug buffer."
       (interactive)
       (require 'md-mermaid-tools)
       (when (fboundp 'md-mermaid-cli-debug-show)
-        (call-interactively 'md-mermaid-cli-debug-show)))
+        (call-interactively #'md-mermaid-cli-debug-show)))
 
     (transient-define-prefix md-mermaid-cli-tools-menu ()
       "CLI Tools installation and management menu.\n\nKeys: s=Show versions, S=Cycle versions display; m/M=Set/Cycle npm client; P=Add global Node bin to PATH; F=Verify tool and fix PATH."
@@ -1083,8 +1096,10 @@ If none tracked yet, prompt for a `-images.md' file under the project root."
 
 ;; Install global keybindings if requested.
 (when md-mermaid-install-global-keybindings
-  (md-mermaid--apply-keymap-prefix md-mermaid-keymap-prefix)
-  (md-mermaid--apply-transient-menu-keybinding md-mermaid--transient-menu-keybinding))
+  (when md-mermaid-keymap-prefix
+    (md-mermaid--apply-keymap-prefix md-mermaid-keymap-prefix))
+  (when md-mermaid-transient-menu-keybinding
+    (md-mermaid--apply-transient-menu-keybinding md-mermaid-transient-menu-keybinding)))
 
 (provide 'md-mermaid)
 ;;; md-mermaid.el ends here

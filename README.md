@@ -6,7 +6,7 @@ md-mermaid renders Mermaid code fences inside Markdown buffers, writes sibling M
 - **One command, multiple outputs** – `md-mermaid-render-current` produces `-images.md` (SVG) or `-emacs.md` (PNG) with pre-linked assets under `assets/mermaid/`.
 - **Live overlays** – `md-mermaid-live-mode` renders visible fences asynchronously, keeps existing diagrams onscreen, and respects scroll/visibility toggles.
 - **Integrated CLI installer** – the CLI Tools menu installs/updates/checks Mermaid CLI, Puppeteer, Chromium, etc., using async processes and optional notifications.
-- **Customizable surface** – keybindings for the transient menu and the `C-c M` prefix can be re-bound interactively and saved for future sessions.
+- **Customizable surface** – keybindings for the transient menu and the `C-c M` prefix can be re-bound interactively via the menu option or `M-x md-mermaid-customize-keys`, and saved for future sessions.
 - **Python + Node toolchain included** – shell wrapper and render/snippet Python scripts ship with the package; no external Makefile dance required.
 
 ## Rendering & Live Preview at a Glance
@@ -58,6 +58,19 @@ cd ~/.emacs.d && git clone https://github.com/ahmetus/md-mermaid.git
 (add-to-list 'load-path (expand-file-name "md-mermaid" user-emacs-directory))
 (require 'md-mermaid)
 ```
+
+### Keybindings
+
+This package does not set global keybindings by default. To enable the recommended bindings, add the following to your init.el:
+
+```elisp
+(global-set-key (kbd "C-c m") 'md-mermaid-transient)
+(global-set-key (kbd "C-c M") 'md-mermaid-prefix)
+```
+
+Or customize `md-mermaid-transient-menu-keybinding` and `md-mermaid-keymap-prefix`.
+
+**Note:** You can also bind these keys interactively via the menu option (`M-x md-mermaid-customize-keys`) which allows you to save them to your custom file.
 
 ### Install CLI dependencies from Emacs (recommended)
 1. `M-x md-mermaid-transient`

@@ -10,7 +10,6 @@
 ;; Author:  Ahmet Usal <ahmetusal@gmail.com>
 ;; Collaborators: OpenAI Assistant, Claude Assistant
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: tools, mermaid, cli
 ;; URL: https://github.com/ahmetus/md-mermaid
 
@@ -225,7 +224,7 @@ Return nil if OK, or error string explaining the problem."
       (with-current-buffer (generate-new-buffer "*md-mermaid-cli-tools*")
         (let ((inhibit-read-only t))
           (insert "=== md-mermaid CLI Tools Log ===\n")
-          (insert (format "Session started: %s\n\n" (format-time-string "%Y-%m-%d %H:%M:%S")))
+          (insert (format "Session started: %s\n\n" (format-time-string "%F %T")))
           (current-buffer)))))
 
 (defun md-mermaid-cli--display-output-buffer ()

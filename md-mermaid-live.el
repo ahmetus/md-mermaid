@@ -12,7 +12,6 @@
 ;; Author:  Ahmet Usal <ahmetusal@gmail.com>
 ;; Collaborators: OpenAI Assistant, Claude Assistant
 ;; Version: 1.0
-;; Package-Requires: ((emacs "27.1") (md-mermaid "1.0"))
 ;; Keywords: markdown, mermaid, tools, images
 ;; URL: https://github.com/ahmetus/md-mermaid
 
@@ -38,6 +37,17 @@
 ;; (running with -Q and without load-path tweaks) from failing. Commands
 ;; that need it will require it just-in-time.
 (require 'md-mermaid nil 'noerror)
+
+(declare-function treesit-available-p "treesit")
+(declare-function treesit-language-available-p "treesit")
+(declare-function treesit-parser-p "treesit")
+(declare-function treesit-parser-language "treesit")
+(declare-function treesit-parser-list "treesit")
+(declare-function treesit-parser-create "treesit")
+(declare-function treesit-node-start "treesit")
+(declare-function treesit-node-end "treesit")
+(declare-function treesit-parser-root-node "treesit")
+(declare-function treesit-query-capture "treesit")
 
 ;; Silence byte-compiler for references before the minor mode is defined.
 (defvar md-mermaid-live-mode nil)
@@ -1221,8 +1231,7 @@ and track the invisibility spec."
           (setq ov old)
           (overlay-put ov 'md-mermaid-pos pos)
           (unless (memq ov md-mermaid-live--overlays)
-            (push ov md-mermaid-live--overlays))))
-    )
+            (push ov md-mermaid-live--overlays)))))
     (unless ov
       (setq ov (make-overlay pos pos nil t t))
       (overlay-put ov 'md-mermaid-live t)
