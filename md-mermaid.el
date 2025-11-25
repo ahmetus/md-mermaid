@@ -145,8 +145,10 @@ Value can be:
 if a dependency is missing."
   :type 'boolean)
 
-(defcustom md-mermaid-install-global-keybindings t
-  "When non-nil, install the global prefix and keybinding."
+(defcustom md-mermaid-install-global-keybindings nil
+  "When non-nil, install the global prefix and keybinding.
+Users can set this to t in their init file, or use
+`\\[md-mermaid-customize-keys]' to bind keys interactively."
   :type 'boolean)
 
 ;; Autoload live-facing commands so bindings work without manual require.
