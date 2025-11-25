@@ -1,6 +1,32 @@
 # md-mermaid for Emacs
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Emacs](https://img.shields.io/badge/Emacs-27.1+-purple.svg)](https://www.gnu.org/software/emacs/)
+[![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+
 md-mermaid renders Mermaid code fences inside Markdown buffers, writes sibling Markdown/PNG/SVG outputs, and provides a live overlay mode so diagrams stay in sync while you edit. Everything happens from Emacs: the transient menu exposes rendering commands, live-mode toggles, diagnostics, and a full CLI tools installer so you can bootstrap `mmdc`, Puppeteer, and friends without leaving the editor.
+
+## Table of Contents
+
+- [Highlights](#highlights)
+- [Rendering & Live Preview at a Glance](#rendering--live-preview-at-a-glance)
+- [Installation](#installation)
+  - [Requirements](#requirements)
+  - [Install the Elisp package](#install-the-elisp-package)
+  - [Keybindings](#keybindings)
+  - [Install CLI dependencies from Emacs (recommended)](#install-cli-dependencies-from-emacs-recommended)
+  - [Command-line usage (non-Emacs batch mode)](#command-line-usage-non-emacs-batch-mode)
+- [Everyday Workflow](#everyday-workflow)
+  - [Batch rendering](#batch-rendering)
+  - [Live overlays](#live-overlays)
+  - [CLI management](#cli-management)
+- [Configuration Snippets](#configuration-snippets)
+- [Examples & Screenshots](#examples--screenshots)
+- [Documentation & References](#documentation--references)
+- [Troubleshooting](#troubleshooting)
+- [Credits](#credits)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Highlights
 - **One command, multiple outputs** – `md-mermaid-render-current` produces `-images.md` (SVG) or `-emacs.md` (PNG) with pre-linked assets under `assets/mermaid/`.
@@ -11,15 +37,23 @@ md-mermaid renders Mermaid code fences inside Markdown buffers, writes sibling M
 
 ## Rendering & Live Preview at a Glance
 
-```text
-M-x md-mermaid-transient
-  r → batch render current buffer (choose PNG/SVG preset)
-  l → toggle live overlays (stateful ON/OFF indicator)
-  t → open CLI Tools menu (install/update/check mmdc & dependencies)
-  v/s/c/a → toggle visibility + scroll stabilizers
-  e/x/R/g → diagnostics, clear overlays, restart, render visible region
-```
+**Transient Menu** (`M-x md-mermaid-transient`):
 
+| Key | Action |
+|-----|--------|
+| `r` | Batch render current buffer (choose PNG/SVG preset) |
+| `l` | Toggle live overlays (stateful ON/OFF indicator) |
+| `t` | Open CLI Tools menu (install/update/check mmdc & dependencies) |
+| `v` | Toggle code visibility |
+| `s` | Toggle scroll stabilizers |
+| `c` | Toggle code/diagram display |
+| `a` | Toggle all visibility options |
+| `e` | Show diagnostics |
+| `x` | Clear overlays |
+| `R` | Restart live mode |
+| `g` | Render visible region |
+
+**How it works:**
 - Batch mode parses the entire Markdown buffer and writes sibling Markdown with image references.
 - Live mode watches edits/scroll events, queues renders per fence, and reuses cached PNGs until fresh output arrives.
 - CLI Tools menu drives `md-mermaid-tools.el`, which spawns npm/system commands, logs output, and surfaces results via notifications or log buffers.
@@ -28,8 +62,8 @@ M-x md-mermaid-transient
 
 ### Requirements
 - Emacs 27.1+ (native compilation welcome but not required)
-- Python 3 (already bundled on most distros)
-- Node.js (18+ recommended)
+- Python 3.7+ (already bundled on most distros)
+- Node.js 18.0.0+ (required by Mermaid CLI)
 - Mermaid CLI runtime (`mmdc`) and Chromium/Puppeteer (auto-installed via the CLI menu, or install manually with npm/system packages)
 
 ### Install the Elisp package
@@ -134,6 +168,28 @@ The command produces the same sibling Markdown + asset layout used by the Emacs 
 - Prompts for preset (SVG, PNG 1280/1400/1800, custom width)
 - Writes sibling Markdown (`foo-images.md` or `foo-emacs.md`) and assets under `assets/mermaid/`
 - `M-x md-mermaid-preview-last-svg` opens the most recent SVG output in your preferred browser/grip/http server
+
+**Example: Input → Output**
+
+Input file (`example.md`):
+````markdown
+# My Documentation
+
+```mermaid
+graph TD
+    A[Start] --> B[Process]
+    B --> C[End]
+```
+````
+
+Generated output (`example-images.md` for SVG or `example-emacs.md` for PNG):
+````markdown
+# My Documentation
+
+![mermaid-diagram-0](assets/mermaid/example-mermaid-diagram-0.svg)
+````
+
+The diagram is rendered and saved to `assets/mermaid/`, with the markdown file automatically linking to it.
 
 ### Live overlays
 ```elisp
