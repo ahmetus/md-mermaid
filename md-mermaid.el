@@ -1,6 +1,6 @@
 ;;; md-mermaid.el --- Render Mermaid in Markdown via presets  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or

@@ -221,9 +221,9 @@ Logs live in `*md-mermaid-cli*` buffers, and notifications fire when long instal
 
 ## Examples & Screenshots
 
-- **Quick smoke test** – [`examples/mermaid-quick-test.md`](examples/mermaid-quick-test.md) (paired `*-emacs.md` and assets) shows flowchart + sequence output.  
-- **Parallel merge sort** – [`examples/parallel-merge-sort.md`](examples/parallel-merge-sort.md) illustrates large multi-step diagrams with matching PNG/SVG exports.  
-- **System architecture** – [`examples/system-architecture-complex.md`](examples/system-architecture-complex.md) mirrors the design described in `PROJECT-ARCHITECTURE.md`.  
+- **Quick smoke test** – [`examples/mermaid-quick-test.md`](examples/mermaid-quick-test.md) (paired `*-emacs.md` and assets) shows flowchart + sequence output.
+- **Parallel merge sort** – [`examples/parallel-merge-sort.md`](examples/parallel-merge-sort.md) illustrates large multi-step diagrams with matching PNG/SVG exports.
+- **System architecture** – [`examples/system-architecture-complex.md`](examples/system-architecture-complex.md) mirrors the design described in `PROJECT-ARCHITECTURE.md`.
 - **Conversation overlays** – [`examples/ts-openai-chat-arch.md`](examples/ts-openai-chat-arch.md) highlights multi-buffer live rendering.
 
 Live overlay view inside Emacs:
@@ -262,13 +262,5 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. The short ve
 ## License
 
 This project is licensed under the **GNU General Public License v3.0** (GPL-3.0) - see the [LICENSE](LICENSE) file for details.
-
-### Third-Party Dependencies
-
-This project integrates with the following external tools, each under their own license:
-
-- **Mermaid CLI** (`@mermaid-js/mermaid-cli`) - [MIT License](https://github.com/mermaid-js/mermaid-cli/blob/master/LICENSE)
-- **Puppeteer** - [Apache License 2.0](https://github.com/puppeteer/puppeteer/blob/main/LICENSE)
-- **Node.js** - [Various licenses](https://github.com/nodejs/node/blob/main/LICENSE)
 
 Users of this software must comply with GPL-3.0 for the md-mermaid code itself. The external dependencies retain their original licenses and are not modified by this project.
