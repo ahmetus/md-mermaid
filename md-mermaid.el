@@ -819,7 +819,7 @@ With prefix arg FORCE command Ctrl u, re-render even if images exist."
   md-mermaid-prefix)
 
 (defun md-mermaid--apply-keymap-prefix (key)
-  "Bind KEY to `md-mermaid-prefix'; remove the binding when KEY is nil."
+  "Bind KEY to keymap `md-mermaid-prefix'; remove the binding when KEY is nil."
   (condition-case err
       (progn
         (when md-mermaid--active-prefix-keybinding
