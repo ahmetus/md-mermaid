@@ -1,7 +1,7 @@
 # md-mermaid for Emacs
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Emacs](https://img.shields.io/badge/Emacs-27.1+-purple.svg)](https://www.gnu.org/software/emacs/)
+[![Emacs](https://img.shields.io/badge/Emacs-29.1+-purple.svg)](https://www.gnu.org/software/emacs/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 
 md-mermaid renders Mermaid code fences inside Markdown buffers, writes sibling Markdown/PNG/SVG outputs, and provides a live overlay mode so diagrams stay in sync while you edit. Everything happens from Emacs: the transient menu exposes rendering commands, live-mode toggles, diagnostics, and a full CLI tools installer so you can bootstrap `mmdc`, Puppeteer, and friends without leaving the editor.
