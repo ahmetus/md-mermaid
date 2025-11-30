@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 """
+Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Author:  Ahmet Usal <ahmetusal@gmail.com>
+Collaborators: OpenAI Assistant, Claude Assistant
+Version : 1.0
+
 Generate a Markdown outline for Python files using the stdlib `ast` module.
 Includes imports, classes -> methods, top-level functions, and simple
 top-level variables with line numbers. No external deps.
@@ -100,4 +110,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

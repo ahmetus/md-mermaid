@@ -1,26 +1,45 @@
 ;;; py-treesit-outline.el --- Treesit Python outline with lines  -*- lexical-binding: t; -*-
 
-;; Batch-friendly Python outline using Emacs treesit. Requires the Python
+;; Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; Author:  Ahmet Usal <ahmetusal@gmail.com>
+;; Collaborators: OpenAI Assistant, Claude Assistant
+;; Version: 1.0
+
+;;; Commentary:
+
+
+;; Batch-friendly Python outline using Emacs treesit.  Requires the Python
 ;; grammar (treesit python) which is available in modern Emacs.
 
 ;; Usage (batch):
 ;; emacs -Q --batch -l scripts/py-treesit-outline.el \
 ;;   --eval '(py-outline-batch :outdir "." :files (list "scripts/md_mermaid_render.py" "scripts/md_mermaid_snippet.py"))'
 
+;;; Code:
+
 (require 'treesit)
 
 (defun py-outline--ensure-parser ()
+  "Ensure a Python treesit parser exists for the current buffer."
   (unless (treesit-parser-list)
     (ignore-errors (treesit-parser-create 'python))))
 
 (defun py-outline--node-line (node)
+  "Return the line number where NODE start."
   (line-number-at-pos (treesit-node-start node)))
 
 (defun py-outline--child-by-field-text (node field)
+  "Return the text of NODE's child at FIELD, or nil if absent."
   (let ((n (treesit-node-child-by-field-name node field)))
     (when n (treesit-node-text n (current-buffer)))))
 
 (defun py-outline--collect-imports ()
+  "Collect all import statements from the current buffer."
   (let ((out '()))
     (dolist (n (treesit-query-capture (treesit-buffer-root-node)
                                       "[(import_statement) (import_from_statement)] @imp"))
@@ -31,6 +50,7 @@
     (nreverse out)))
 
 (defun py-outline--collect-classes ()
+  "Collect all class definitions and their methods from the buffer."
   (let (classes)
     (dolist (n (treesit-query-capture (treesit-buffer-root-node) "(class_definition) @cls"))
       (let* ((node (cdr n))
@@ -49,9 +69,11 @@
     (nreverse classes)))
 
 (defun py-outline--top-level-p (node)
+  "Return non-nil if NODE is a direct child of the module root."
   (eq (treesit-node-type (treesit-node-parent node)) "module"))
 
 (defun py-outline--collect-funcs ()
+  "Collect all top-level function definitions from the buffer."
   (let (funcs)
     (dolist (n (treesit-query-capture (treesit-buffer-root-node) "(function_definition) @f"))
       (let* ((node (cdr n)))
@@ -62,6 +84,7 @@
     (nreverse funcs)))
 
 (defun py-outline--collect-vars ()
+  "Collect top-level variable assignments from the buffer."
   (let (vars)
     ;; Top-level assignments: take first identifier on the left side best-effort.
     (dolist (cap (treesit-query-capture (treesit-buffer-root-node) "(assignment) @a"))
@@ -76,6 +99,7 @@
     (nreverse vars)))
 
 (defun py-outline--render-md (file imports classes funcs vars)
+  "Render Markdown outline for FILE with IMPORTS, CLASSES, FUNCS, and VARS."
   (let ((buf (current-buffer))
         (out ""))
     (setq out (concat out "# Python Treesit Outline\n\n"))
@@ -99,6 +123,7 @@
     out)))
 
 (defun py-outline--one (file outdir)
+  "Export Python outline for FILE to OUTDIR as Markdown."
   (let* ((buf (find-file-noselect file))
          (out (expand-file-name (concat (file-name-sans-extension (file-name-nondirectory file))
                                         "-py-outline.md") outdir)))
@@ -113,7 +138,7 @@
     out))
 
 (defun py-outline-batch (&rest plist)
-  "Batch entry: (py-outline-batch :outdir \".\" :files (list ...))."
+  "Batch entry: (py-outline-batch PLIST :outdir \".\" :files (list ...))."
   (let* ((outdir (or (plist-get plist :outdir) default-directory))
          (files (plist-get plist :files)))
     (unless (listp files)
@@ -124,5 +149,4 @@
 
 (provide 'py-treesit-outline)
 
-;; End of file balance
-;; )
+;;; py-treesit-outline.el ends here

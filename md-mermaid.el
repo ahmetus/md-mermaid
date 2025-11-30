@@ -9,7 +9,7 @@
 ;; Author:  Ahmet Usal <ahmetusal@gmail.com>
 ;; Collaborators: OpenAI Assistant, Claude Assistant
 ;; Version: 1.0
-;; Package-Requires: ((emacs "27.1") (transient "0.3.7"))
+;; Package-Requires: ((emacs "29.1") (transient "0.3.7"))
 ;; Keywords: markdown, mermaid, tools, images
 ;; URL: https://github.com/ahmetus/md-mermaid
 ;;

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """
+Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Author:  Ahmet Usal <ahmetusal@gmail.com>
+Collaborators: OpenAI Assistant, Claude Assistant
+
 Python outline generator using py-tree-sitter.
 
 Produces a Markdown outline with line numbers for:
@@ -59,7 +68,9 @@ def _load_python_language() -> Language:
         pass
 
     # 3) Env variable to a .so; load symbol tree_sitter_python()
-    import os, sysconfig, glob
+    import os
+    import sysconfig
+    import glob
     from ctypes import CDLL, c_void_p
 
     env_vars = ("TREE_SITTER_PYTHON_LIB", "TS_PYTHON_LIB", "TS_LANG_LIB")
@@ -196,10 +207,12 @@ def outline_python(path: Path) -> str:
                     txt = _node_text(src, name).strip()
                     names.append(txt.split(".")[0])
         # dedupe preserving order
-        seen = set(); out = []
+        seen = set()
+        out = []
         for nm in names:
             if nm and nm not in seen:
-                out.append(nm); seen.add(nm)
+                out.append(nm)
+                seen.add(nm)
         return out
 
     # name -> first line number

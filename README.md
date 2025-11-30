@@ -61,7 +61,7 @@ md-mermaid renders Mermaid code fences inside Markdown buffers, writes sibling M
 ## Installation
 
 ### Requirements
-- Emacs 27.1+ (native compilation welcome but not required)
+- Emacs 29.1+ (native compilation welcome but not required)
 - Python 3.7+ (already bundled on most distros)
 - Node.js 18.0.0+ (required by Mermaid CLI)
 - Mermaid CLI runtime (`mmdc`) and Chromium/Puppeteer (auto-installed via the CLI menu, or install manually with npm/system packages)

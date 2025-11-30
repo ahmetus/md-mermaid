@@ -1,16 +1,33 @@
 ;;; outline-export.el --- Export imenu to Org/Markdown (batch) -*- lexical-binding: t; -*-
 
+;; Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; Author:  Ahmet Usal <ahmetusal@gmail.com>
+;; Collaborators: OpenAI Assistant, Claude Assistant
+;; Version: 1.0
+
+;;; Commentary:
+
 ;; Minimal, batch-friendly imenu exporter with line numbers.
 ;; Safe to load with: emacs -Q --batch -l scripts/outline-export.el
+
+;;; Code:
 
 (require 'imenu)
 (require 'seq)
 
 (defun outline-export--mkline (buf pos)
+  "Return the line number of POS in buffer BUF."
   (with-current-buffer buf
     (line-number-at-pos (if (markerp pos) (marker-position pos) pos))))
 
 (defun outline-export--alist->org (alist level buf &optional root)
+  "Convert imenu ALIST to Org format at LEVEL using BUF.
+ROOT indicates if this is the top-level call."
   (let ((out "") (items ""))
     (dolist (it alist)
       (let ((name (car it))
@@ -33,6 +50,8 @@
     out))
 
 (defun outline-export--alist->md (alist level buf &optional root)
+  "Convert imenu ALIST to Markdown format at LEVEL using BUF.
+ROOT indicates if this is the top-level call."
   (let ((out "") (items ""))
     (dolist (it alist)
       (let ((name (car it))
@@ -55,7 +74,7 @@
     out))
 
 (defun outline-export--one (file format outdir)
-  "Export FILE's imenu to OUTDIR as FORMAT symbol: 'markdown or 'org."
+  "Export FILE's imenu to OUTDIR as FORMAT symbol:markdown or org."
   (let* ((buf (find-file-noselect file))
          (ext (if (eq format 'markdown) ".md" ".org"))
          (base (concat (file-name-sans-extension (file-name-nondirectory file)) "-outline"))
@@ -77,7 +96,7 @@
     out))
 
 (defun outline-export-batch (&rest plist)
-  "Batch entry: (outline-export-batch :format \"markdown\" :outdir \".\" :files (list ...))."
+  "PLIST (outline-export-batch :format \"markdown\" :outdir \".\" :files (list ...))."
   (let* ((fmt (intern (downcase (or (plist-get plist :format) "markdown"))))
          (outdir (or (plist-get plist :outdir) default-directory))
          (files (plist-get plist :files)))
@@ -88,3 +107,5 @@
         (princ (format "Wrote %s\n" p))))))
 
 (provide 'outline-export)
+
+;;; outline-export.el ends here

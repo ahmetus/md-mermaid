@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+
+########################################################################
+# Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>		       #
+# This program is free software; you can redistribute it and/or modify #
+# it under the terms of the GNU General Public License as published by #
+# the Free Software Foundation, either version 3 of the License, or    #
+# (at your option) any later version.				       #
+# 								       #
+# Author:  Ahmet Usal <ahmetusal@gmail.com>			       #
+# Collaborators: OpenAI Assistant, Claude Assistant		       #
+########################################################################
+
 set -euo pipefail
 
 # Markdown Mermaid renderer wrapper (md-mermaid)
@@ -29,7 +41,7 @@ config=""; theme=""; background=""; puppeteer_cfg=""
 usage(){
   cat <<USAGE
 Usage:
-  bash md-mermaid/scripts/md-mermaid.sh -i INPUT.md [-o OUTPUT.md] [-d DIR] [-f] 
+  bash md-mermaid/scripts/md-mermaid.sh -i INPUT.md [-o OUTPUT.md] [-d DIR] [-f]
     -svg | -png1280 | -png1400 | -png1800 | -pngW WIDTH [--config FILE] [--theme THEME] [--background COLOR]
 
 Examples:

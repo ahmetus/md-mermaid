@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """
+Copyright (C) 2025 Ahmet Usal <ahmetusal@gmail.com>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Author:  Ahmet Usal <ahmetusal@gmail.com>
+Collaborators: OpenAI Assistant, Claude Assistant
+
 Render a single Mermaid snippet from stdin using mermaid-cli (mmdc).
 
 - Reuses the same caching idea as the batch renderer: the output filename is
@@ -14,7 +23,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import shutil
 import subprocess
 import sys
