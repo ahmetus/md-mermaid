@@ -42,16 +42,16 @@
 ;;
 ;; Keybindings:
 ;;   This package does not set global keybindings by default.
-;;   To enable the recommended bindings, add the following to your init.el:
+;;   Enable `md-mermaid-keybindings-mode' to activate the default bindings:
 ;;
-;;     (global-set-key (kbd "C-c m") 'md-mermaid-transient)
-;;     (global-set-key (kbd "C-c M") 'md-mermaid-prefix)
+;;     (md-mermaid-keybindings-mode 1)
 ;;
-;;   Or customize `md-mermaid-transient-menu-keybinding` and
-;;   `md-mermaid-keymap-prefix`.
+;;   Default keys (customizable via `md-mermaid-transient-menu-keybinding'
+;;   and `md-mermaid-keymap-prefix'):
+;;     C-c m  - open the md-mermaid transient menu
+;;     C-c M  - prefix map for quickfix commands
 ;;
-;;   You can also use the menu option (M-x md-mermaid-customize-keys) to
-;;   bind these keys interactively and save them to your custom file.
+;;   You can also use `M-x md-mermaid-customize-keys' for interactive setup.
 ;;
 ;; Presets offered:
 ;;   - SVG (browser/grip)      → neutral theme, transparent background
@@ -145,11 +145,8 @@ Value can be:
 if a dependency is missing."
   :type 'boolean)
 
-(defcustom md-mermaid-install-global-keybindings nil
-  "When non-nil, install the global prefix and keybinding.
-Users can set this to t in their init file, or use
-`\\[md-mermaid-customize-keys]' to bind keys interactively."
-  :type 'boolean)
+;; Note: `md-mermaid-install-global-keybindings' has been removed.
+;; Use `md-mermaid-keybindings-mode' instead (see end of file).
 
 ;; Autoload live-facing commands so bindings work without manual require.
 (autoload 'md-mermaid-live-mode "md-mermaid-live" "Toggle live Mermaid overlays." t)
@@ -807,71 +804,23 @@ With prefix arg FORCE command Ctrl u, re-render even if images exist."
 (defvar md-mermaid--transient-menu-defined nil
   "Tracks whether the md-mermaid transient menu has been defined.")
 
-(defvar md-mermaid--active-prefix-keybinding nil
-  "Track the currently active binding for the md-mermaid prefix command.")
-(defvar md-mermaid-transient-menu-keybinding nil
-  "Track the currently active global keybinding for the transient menu.")
-
 (defun md-mermaid--ensure-prefix-keymap ()
-  "Ensure `md-mermaid-prefix` is parented to `md-mermaid-prefix-map`."
+  "Parent symbol `md-mermaid-prefix' to variable `md-mermaid-prefix-map'."
   (when (keymapp md-mermaid-prefix)
     (set-keymap-parent md-mermaid-prefix md-mermaid-prefix-map))
   md-mermaid-prefix)
 
-(defun md-mermaid--apply-keymap-prefix (key)
-  "Bind KEY to keymap `md-mermaid-prefix'; remove the binding when KEY is nil."
-  (condition-case err
-      (progn
-        (when md-mermaid--active-prefix-keybinding
-          (global-unset-key (kbd md-mermaid--active-prefix-keybinding))
-          (setq md-mermaid--active-prefix-keybinding nil))
-        (when (and key (not (string-empty-p key)))
-          (md-mermaid--ensure-prefix-keymap)
-          (global-set-key (kbd key) #'md-mermaid-prefix)
-          (setq md-mermaid--active-prefix-keybinding key)))
-    (error
-     (message "md-mermaid--apply-keymap-prefix error: %s"
-              (error-message-string err)))))
-
-(defun md-mermaid--set-keymap-prefix (symbol value)
-  "Setter for `md-mermaid-keymap-prefix`.
-Update the global prefix binding when SYMBOL is set to VALUE."
-  (set-default symbol value)
-  (md-mermaid--apply-keymap-prefix value))
-
-(defun md-mermaid--apply-transient-menu-keybinding (key)
-  "Bind KEY to `md-mermaid-transient'; remove the binding when KEY is nil."
-  (condition-case err
-      (progn
-        (when md-mermaid-transient-menu-keybinding
-          (global-unset-key (kbd md-mermaid-transient-menu-keybinding))
-          (setq md-mermaid-transient-menu-keybinding nil))
-        (when (and key (not (string-empty-p key)))
-          (global-set-key (kbd key) #'md-mermaid-transient)
-          (setq md-mermaid-transient-menu-keybinding key)))
-    (error
-     (message "md-mermaid--apply-transient-menu-keybinding error: %s"
-              (error-message-string err)))))
-
-(defun md-mermaid--set-transient-menu-keybinding (symbol value)
-  "Setter for `md-mermaid--transient-menu-keybinding`.
-Update the transient menu binding when SYMBOL is set to VALUE."
-  (set-default symbol value)
-  (md-mermaid--apply-transient-menu-keybinding value))
-
-(defcustom md-mermaid-keymap-prefix nil
-  "Global prefix keybinding for md-mermaid commands.
-Set this to nil to disable the automatic binding."
+(defcustom md-mermaid-keymap-prefix "C-c M"
+  "Keybinding for the md-mermaid prefix map (quickfix commands, etc.).
+Set to nil to disable.  Takes effect when `md-mermaid-keybindings-mode' is on."
   :type '(choice (const :tag "Disabled" nil) string)
-  :group 'md-mermaid
-  :set #'md-mermaid--set-keymap-prefix)
+  :group 'md-mermaid)
 
-(defcustom md-mermaid-transient-menu-keybinding nil
-  "Global keybinding for `md-mermaid-transient`.
-Set this to nil to disable the automatic binding."
+(defcustom md-mermaid-transient-menu-keybinding "C-c m"
+  "Keybinding for the command `md-mermaid-transient' (main menu).
+Set to nil to disable.  Takes effect when `md-mermaid-keybindings-mode' is on."
   :type '(choice (const :tag "Disabled" nil) string)
-  :group 'md-mermaid
-  :set #'md-mermaid--set-transient-menu-keybinding)
+  :group 'md-mermaid)
 
 (defun md-mermaid--read-keybinding-input (prompt current)
   "Prompt with PROMPT for a keyboard shortcut, using CURRENT as the default.
@@ -894,35 +843,32 @@ Returns a normalized key string or nil when the user disables the binding."
                      trimmed (error-message-string err)))))))
 
 (defun md-mermaid-customize-keys ()
-  "Interactively customize md-mermaid global keybindings."
+  "Interactively customize md-mermaid global keybindings.
+Updates both variables and refreshes the minor mode keymap if active."
   (interactive)
   (condition-case err
       (let* ((menu-key (md-mermaid--read-keybinding-input "Main menu key"
                                                          md-mermaid-transient-menu-keybinding))
-             (ext-current (and md-mermaid--ext-available
-                               md-mermaid-keymap-prefix))
-             (ext-key (and md-mermaid--ext-available
-                           (md-mermaid--read-keybinding-input "Extension prefix key"
-                                                              ext-current))))
+             (prefix-key (md-mermaid--read-keybinding-input "Prefix key (quickfix, etc.)"
+                                                           md-mermaid-keymap-prefix)))
         (customize-set-variable 'md-mermaid-transient-menu-keybinding menu-key)
-        (if md-mermaid--ext-available
-            (progn
-              (customize-set-variable 'md-mermaid-keymap-prefix ext-key)
-              (message "Updated menu key: %s; extension prefix: %s"
-                       (or menu-key "disabled")
-                       (or ext-key "disabled"))
-              (when (yes-or-no-p "Save these keybindings for future sessions? ")
-                (customize-save-variable 'md-mermaid-transient-menu-keybinding menu-key)
-                (customize-save-variable 'md-mermaid-keymap-prefix ext-key)
-                (message "Keybindings saved to %s" (or custom-file user-init-file))))
-          (message "Updated menu key: %s; extension prefix unchanged (extensions unavailable)."
-                   (or menu-key "disabled"))
-          (when (yes-or-no-p "Save the menu keybinding for future sessions? ")
-            (customize-save-variable 'md-mermaid-transient-menu-keybinding menu-key)
-            (message "Menu key saved to %s" (or custom-file user-init-file)))))
+        (customize-set-variable 'md-mermaid-keymap-prefix prefix-key)
+        ;; Refresh the minor mode keymap if active.
+        (when (bound-and-true-p md-mermaid-keybindings-mode)
+          (md-mermaid--rebuild-keybindings-map))
+        (message "Updated: menu=%s, prefix=%s%s"
+                 (or menu-key "disabled")
+                 (or prefix-key "disabled")
+                 (if (bound-and-true-p md-mermaid-keybindings-mode)
+                     " (keymap refreshed)"
+                   " (enable md-mermaid-keybindings-mode to activate)"))
+        (when (yes-or-no-p "Save these keybindings for future sessions? ")
+          (customize-save-variable 'md-mermaid-transient-menu-keybinding menu-key)
+          (customize-save-variable 'md-mermaid-keymap-prefix prefix-key)
+          (message "Keybindings saved to %s" (or custom-file user-init-file))))
     (error
      (message "md-mermaid-customize-keys error: %s"
-              (error-message-string err))))) ; close md-mermaid-customize-keys
+              (error-message-string err)))))
 
 (defun md-mermaid--transient-toggle-live-mode ()
   "Toggle `md-mermaid-live-mode' from the transient menu."
@@ -1096,12 +1042,50 @@ If none tracked yet, prompt for a `-images.md' file under the project root."
           (md-mermaid--maybe-open-browser md-mermaid--last-svg-md))
       (message "md-mermaid: No SVG Markdown chosen/found. Render with SVG first."))))
 
-;; Install global keybindings if requested.
-(when md-mermaid-install-global-keybindings
-  (when md-mermaid-keymap-prefix
-    (md-mermaid--apply-keymap-prefix md-mermaid-keymap-prefix))
-  (when md-mermaid-transient-menu-keybinding
-    (md-mermaid--apply-transient-menu-keybinding md-mermaid-transient-menu-keybinding)))
+;;; Global minor mode for keybindings
+
+(defvar md-mermaid-keybindings-mode-map (make-sparse-keymap)
+  "Keymap active when `md-mermaid-keybindings-mode' is enabled.")
+
+(defun md-mermaid--rebuild-keybindings-map ()
+  "Rebuild `md-mermaid-keybindings-mode-map' from current settings."
+  (setq md-mermaid-keybindings-mode-map (make-sparse-keymap))
+  (when (and md-mermaid-transient-menu-keybinding
+             (not (string-empty-p md-mermaid-transient-menu-keybinding)))
+    (condition-case nil
+        (define-key md-mermaid-keybindings-mode-map
+                    (kbd md-mermaid-transient-menu-keybinding)
+                    #'md-mermaid-transient)
+      (error nil)))
+  (when (and md-mermaid-keymap-prefix
+             (not (string-empty-p md-mermaid-keymap-prefix)))
+    (condition-case nil
+        (progn
+          (md-mermaid--ensure-prefix-keymap)
+          (define-key md-mermaid-keybindings-mode-map
+                      (kbd md-mermaid-keymap-prefix)
+                      #'md-mermaid-prefix))
+      (error nil))))
+
+;;;###autoload
+(define-minor-mode md-mermaid-keybindings-mode
+  "Global minor mode that activates md-mermaid keybindings.
+
+When enabled, binds keys according to `md-mermaid-transient-menu-keybinding'
+and `md-mermaid-keymap-prefix'.  The default bindings are:
+
+  \\[md-mermaid-transient]  - open the md-mermaid transient menu
+  \\[md-mermaid-prefix]     - prefix map for quickfix commands
+
+To change bindings, customize `md-mermaid-transient-menu-keybinding' and
+`md-mermaid-keymap-prefix', then toggle this mode off/on to refresh.
+Or use `M-x md-mermaid-customize-keys' for interactive configuration."
+  :global t
+  :lighter " md-m"
+  :keymap md-mermaid-keybindings-mode-map
+  :group 'md-mermaid
+  (when md-mermaid-keybindings-mode
+    (md-mermaid--rebuild-keybindings-map)))
 
 (provide 'md-mermaid)
 ;;; md-mermaid.el ends here

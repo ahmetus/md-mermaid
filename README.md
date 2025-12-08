@@ -95,16 +95,25 @@ cd ~/.emacs.d && git clone https://github.com/ahmetus/md-mermaid.git
 
 ### Keybindings
 
-This package does not set global keybindings by default. To enable the recommended bindings, add the following to your init.el:
+This package does not set global keybindings by default. Enable the global minor mode to activate the default bindings:
 
 ```elisp
-(global-set-key (kbd "C-c m") 'md-mermaid-transient)
-(global-set-key (kbd "C-c M") 'md-mermaid-prefix)
+(md-mermaid-keybindings-mode 1)
 ```
 
-Or customize `md-mermaid-transient-menu-keybinding` and `md-mermaid-keymap-prefix`.
+**Default keys** (when the mode is enabled):
+| Key | Command |
+|-----|---------|
+| `C-c m` | `md-mermaid-transient` (main menu) |
+| `C-c M` | `md-mermaid-prefix` (quickfix commands) |
 
-**Note:** You can also bind these keys interactively via the menu option (`M-x md-mermaid-customize-keys`) which allows you to save them to your custom file.
+**Customization options:**
+- Customize `md-mermaid-transient-menu-keybinding` and `md-mermaid-keymap-prefix` to change the key sequences
+- Use `M-x md-mermaid-customize-keys` for interactive configuration with save option
+- Or bind keys manually without the mode:
+  ```elisp
+  (global-set-key (kbd "C-c m") 'md-mermaid-transient)
+  ```
 
 ### Install CLI dependencies from Emacs (recommended)
 1. `M-x md-mermaid-transient`
@@ -211,10 +220,10 @@ Logs live in `*md-mermaid-cli*` buffers, and notifications fire when long instal
 ## Configuration Snippets
 
 ```elisp
+(md-mermaid-keybindings-mode 1)               ; enable C-c m / C-c M bindings
 (setq md-mermaid-open-browser 'grip)          ; svg preview: http / grip / browse-url
-(setq md-mermaid-install-global-keybindings t); C-c m … transient, C-c M … prefix map
 (setq md-mermaid-default-preset 'png1400)     ; choose default batch preset
-(setq md-mermaid-cli-preferred-npm "npm")      ; or "pnpm", "yarn", "bun"
+(setq md-mermaid-cli-preferred-npm "npm")     ; or "pnpm", "yarn", "bun"
 (setq md-mermaid-notify-method 'both)         ; 'emacs, 'os, or 'both
 (setq md-mermaid-notify-batch-when 'focus-away)
 ```
