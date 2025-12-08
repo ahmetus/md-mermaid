@@ -810,17 +810,27 @@ With prefix arg FORCE command Ctrl u, re-render even if images exist."
     (set-keymap-parent md-mermaid-prefix md-mermaid-prefix-map))
   md-mermaid-prefix)
 
+(defun md-mermaid--set-keybinding-variable (symbol value)
+  "Setter for keybinding variables; rebuild keymap if mode is active.
+Sets SYMBOL to VALUE and refreshes keybindings."
+  (set-default symbol value)
+  (when (and (bound-and-true-p md-mermaid-keybindings-mode)
+             (fboundp 'md-mermaid--rebuild-keybindings-map))
+    (md-mermaid--rebuild-keybindings-map)))
+
 (defcustom md-mermaid-keymap-prefix "C-c M"
   "Keybinding for the md-mermaid prefix map (quickfix commands, etc.).
 Set to nil to disable.  Takes effect when `md-mermaid-keybindings-mode' is on."
   :type '(choice (const :tag "Disabled" nil) string)
-  :group 'md-mermaid)
+  :group 'md-mermaid
+  :set #'md-mermaid--set-keybinding-variable)
 
 (defcustom md-mermaid-transient-menu-keybinding "C-c m"
   "Keybinding for the command `md-mermaid-transient' (main menu).
 Set to nil to disable.  Takes effect when `md-mermaid-keybindings-mode' is on."
   :type '(choice (const :tag "Disabled" nil) string)
-  :group 'md-mermaid)
+  :group 'md-mermaid
+  :set #'md-mermaid--set-keybinding-variable)
 
 (defun md-mermaid--read-keybinding-input (prompt current)
   "Prompt with PROMPT for a keyboard shortcut, using CURRENT as the default.
@@ -1048,9 +1058,12 @@ If none tracked yet, prompt for a `-images.md' file under the project root."
   "Keymap active when `md-mermaid-keybindings-mode' is enabled.")
 
 (defun md-mermaid--rebuild-keybindings-map ()
-  "Rebuild `md-mermaid-keybindings-mode-map' from current settings."
-  (setq md-mermaid-keybindings-mode-map (make-sparse-keymap))
+  "Rebuild `md-mermaid-keybindings-mode-map' from current settings.
+Clears existing bindings and repopulates from customization variables."
+  ;; Clear the keymap without replacing it (keep the same object).
+  (setcdr md-mermaid-keybindings-mode-map nil)
   (when (and md-mermaid-transient-menu-keybinding
+             (stringp md-mermaid-transient-menu-keybinding)
              (not (string-empty-p md-mermaid-transient-menu-keybinding)))
     (condition-case nil
         (define-key md-mermaid-keybindings-mode-map
@@ -1058,6 +1071,7 @@ If none tracked yet, prompt for a `-images.md' file under the project root."
                     #'md-mermaid-transient)
       (error nil)))
   (when (and md-mermaid-keymap-prefix
+             (stringp md-mermaid-keymap-prefix)
              (not (string-empty-p md-mermaid-keymap-prefix)))
     (condition-case nil
         (progn
