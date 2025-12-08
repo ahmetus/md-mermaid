@@ -967,32 +967,33 @@ Updates both variables and refreshes the minor mode keymap if active."
         (call-interactively #'md-mermaid-cli-debug-show)))
 
     (transient-define-prefix md-mermaid-cli-tools-menu ()
-      "CLI Tools installation and management menu.\n\nKeys: s=Show versions, S=Cycle versions display; m/M=Set/Cycle npm client; P=Add global Node bin to PATH; F=Verify tool and fix PATH."
-      ["Install & Update"
-       ("i" "Install tool" md-mermaid-cli-install-tool)
-       ("u" "Update tool" md-mermaid-cli-update-tool)
-       ("v" "Check version" md-mermaid-cli-check-version)
-       ("I" "Install all tools" md-mermaid-cli-install-all)
-       ("U" "Update all tools" md-mermaid-cli-update-all)
-       ("V" "Check all versions" md-mermaid-cli-check-all-versions)]
-      ["Documentation & Settings"
-       ("d" "View tool docs" md-mermaid-cli-view-tool-docs)
-       ("n" "Toggle notifications" md-mermaid-cli-toggle-notifications)
-       ("N" "Cycle notify method" md-mermaid-cli-cycle-notify-method)
-       ("B" "Cycle batch notify" md-mermaid-cli-cycle-batch-notify)
-       ("D" "Toggle debug mode" md-mermaid-cli-toggle-debug)]
-      ["Versions"
-       ("s" "Show versions table" md-mermaid--menu-show-versions)]
-      ["UI & Display"
-       ("S" "Cycle post-verify display" md-mermaid--menu-cycle-post-verify-show)]
-      ["Package Manager"
-       ("m" "Set preferred npm client" md-mermaid--menu-set-preferred-npm)
-       ("M" "Cycle npm client" md-mermaid--menu-cycle-preferred-npm)]
-      ["Utilities & PATH"
-       ("P" "Add global Node bin to PATH" md-mermaid--menu-add-global-node-bin-to-path)
-       ("F" "Verify tool and fix PATH" md-mermaid--menu-verify-and-fix-path)
-       ("L" "Show CLI tools log" md-mermaid--menu-show-log)
-       ("G" "Show debug buffer" md-mermaid--menu-show-debug)]
+      "CLI Tools installation and management menu."
+      ;; Row 1: Two columns
+      [["Install & Update"
+        ("i" "Install tool" md-mermaid-cli-install-tool)
+        ("u" "Update tool" md-mermaid-cli-update-tool)
+        ("v" "Check version" md-mermaid-cli-check-version)
+        ("I" "Install all tools" md-mermaid-cli-install-all)
+        ("U" "Update all tools" md-mermaid-cli-update-all)
+        ("V" "Check all versions" md-mermaid-cli-check-all-versions)]
+       ["Documentation & Settings"
+        ("d" "View tool docs" md-mermaid-cli-view-tool-docs)
+        ("n" "Toggle notifications" md-mermaid-cli-toggle-notifications)
+        ("N" "Cycle notify method" md-mermaid-cli-cycle-notify-method)
+        ("B" "Cycle batch notify" md-mermaid-cli-cycle-batch-notify)
+        ("D" "Toggle debug mode" md-mermaid-cli-toggle-debug)]]
+      ;; Row 2: Two columns
+      [["Package Manager & Versions"
+        ("m" "Set preferred npm client" md-mermaid--menu-set-preferred-npm)
+        ("M" "Cycle npm client" md-mermaid--menu-cycle-preferred-npm)
+        ("s" "Show versions table" md-mermaid--menu-show-versions)
+        ("S" "Cycle post-verify display" md-mermaid--menu-cycle-post-verify-show)]
+       ["Utilities & PATH"
+        ("P" "Add global Node bin to PATH" md-mermaid--menu-add-global-node-bin-to-path)
+        ("F" "Verify tool and fix PATH" md-mermaid--menu-verify-and-fix-path)
+        ("L" "Show CLI tools log" md-mermaid--menu-show-log)
+        ("G" "Show debug buffer" md-mermaid--menu-show-debug)]]
+      ;; Row 3: Navigation
       ["Navigation"
        ("q" "Back to main menu" md-mermaid-transient)
        ("Q" "Quit" transient-quit-one)])
