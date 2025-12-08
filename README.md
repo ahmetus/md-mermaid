@@ -209,12 +209,30 @@ The diagram is rendered and saved to `assets/mermaid/`, with the markdown file a
 - `v`, `s`, `c`, `a` control code visibility and scroll stabilizers for large diagrams
 
 ### CLI management
+
+Press `t` from the main transient menu to open CLI Tools:
+
 ```text
-t → open CLI Tools menu
-  i/u/v → install, update, check a tool
-  I/U/V → operate on all tools
-  d → view tool docs, n/N/B → notification toggles, D → debug mode
+┌─────────────────────────────┬─────────────────────────────┐
+│ Install & Update            │ Documentation & Settings    │
+│  i - Install tool           │  d - View tool docs         │
+│  u - Update tool            │  n - Toggle notifications   │
+│  v - Check version          │  N - Cycle notify method    │
+│  I - Install all tools      │  B - Cycle batch notify     │
+│  U - Update all tools       │  D - Toggle debug mode      │
+│  V - Check all versions     │                             │
+├─────────────────────────────┼─────────────────────────────┤
+│ Package Manager & Versions  │ Utilities & PATH            │
+│  m - Set preferred npm      │  P - Add Node bin to PATH   │
+│  M - Cycle npm client       │  F - Verify tool & fix PATH │
+│  s - Show versions table    │  L - Show CLI tools log     │
+│  S - Cycle post-verify      │  G - Show debug buffer      │
+├─────────────────────────────┴─────────────────────────────┤
+│ Navigation                                                │
+│  q - Back to main menu      Q - Quit                      │
+└───────────────────────────────────────────────────────────┘
 ```
+
 Logs live in `*md-mermaid-cli*` buffers, and notifications fire when long installs finish (configurable).
 
 ## Configuration Snippets
