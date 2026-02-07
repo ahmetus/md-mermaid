@@ -1009,15 +1009,12 @@ Detects scroll direction and expands prefetch to prevent upward-scroll flicker."
          (content (buffer-substring-no-properties code-beg code-end))
          (code-lines (max 1 (count-lines code-beg code-end)))
          (sig (secure-hash 'sha1 (concat content "|" opt)))
-         (pos (save-excursion
-                (goto-char code-end)
-                (line-end-position)))
          (block-end (save-excursion
                       (goto-char end)
                       (line-end-position))))
     (when (and valid-close (<= code-beg code-end))
       (list :beg beg :code-beg code-beg :code-end code-end
-            :end block-end :pos pos
+            :end block-end :pos block-end
             :indent indent :fence-line fence-line :closing-line closing-line
             :content content :sig sig :code-lines code-lines))))
 
@@ -1217,7 +1214,8 @@ and track the invisibility spec."
          (ov (seq-find (lambda (o)
                          (and (overlay-buffer o)
                               (overlay-get o 'md-mermaid-live)
-                              (= (or (overlay-get o 'md-mermaid-pos) -1) pos)))
+                              (or (= (or (overlay-get o 'md-mermaid-pos) -1) pos)
+                                  (= (overlay-start o) pos))))
                        md-mermaid-live--overlays)))
     (unless ov
       ;; Try to reuse any old live overlay at this position
